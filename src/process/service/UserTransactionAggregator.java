@@ -19,11 +19,9 @@ public class UserTransactionAggregator {
             String actor = entry.getActor();
             userLogs.putIfAbsent(actor, new ArrayList<>());
             userLogs.get(actor).add(entry);
-
             if (entry.getOperationType() == OperationType.TRANSFERRED) {
                 String recipient = entry.getTargetUser();
                 userLogs.putIfAbsent(recipient, new ArrayList<>());
-
                 LogEntry receivedLog = new LogEntry(
                         entry.getTimestamp(),
                         recipient,
@@ -35,7 +33,6 @@ public class UserTransactionAggregator {
                 userLogs.get(recipient).add(receivedLog);
             }
         }
-
         for (List<LogEntry> entries : userLogs.values()) {
             entries.sort(Comparator.comparing(LogEntry::getTimestamp));
         }
@@ -45,10 +42,8 @@ public class UserTransactionAggregator {
         for (Map.Entry<String, List<LogEntry>> userEntry : userLogs.entrySet()) {
             String user = userEntry.getKey();
             List<LogEntry> entries = userEntry.getValue();
-
             BigDecimal balance = BigDecimal.ZERO;
             boolean balanceInit = false;
-
             for (LogEntry entry : entries) {
                 switch (entry.getOperationType()) {
                     case BALANCE_INQUIRY:
@@ -67,7 +62,6 @@ public class UserTransactionAggregator {
                         break;
                 }
             }
-
             LocalDateTime now = LocalDateTime.now();
             LogEntry finalBalanceEntry = new LogEntry(
                     now,
